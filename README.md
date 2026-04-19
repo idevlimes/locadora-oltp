@@ -27,7 +27,7 @@ O projeto inclui:
 ## Arquivos
 
 - `relatorio-locadora-oltp-izabela-caio.pdf` — documentação completa do projeto  
-- `locadora-oltp-script.sql` — criação das tabelas do banco de dados (modelo físico)
+- `locadora-oltp-script_izab_caio.sql` — criação das tabelas do banco de dados (modelo físico)
 - `dicionario_dados_locadora_iza_caio.pdf` - dicionario de dados do modelo do banco de dados
 - `mod_conceitual_locadora_oltp.png` -  o modelo conceitual
 - `mod_logico_locadora_oltp.png` - o modelo logico
