@@ -31,7 +31,7 @@ O projeto inclui:
 - `dicionario_dados_locadora_iza_caio.pdf` - dicionario de dados do modelo do banco de dados
 - `mod_conceitual_locadora_oltp.png` -  o modelo conceitual
 - `mod_logico_locadora_oltp.png` - o modelo logico
-- `relatorio_locadora_oltp-tex` - relatório do projeto em latex
+- `relatorio_locadora_oltp.tex` - relatório do projeto em latex
 
 ## Observações
 
