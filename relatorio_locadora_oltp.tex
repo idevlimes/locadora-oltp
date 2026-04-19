@@ -1,0 +1,309 @@
+\documentclass[12pt,a4paper]{article}
+
+% ── packages ────────────────────────────────────────────────────────────────
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{xcolor}
+\usepackage{colortbl}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{parskip}
+\usepackage{setspace}
+\usepackage{caption}
+\usepackage{float}
+\usepackage{listings}
+\usepackage{hyperref}
+
+\geometry{
+  top=2.5cm, bottom=2.5cm,
+  left=3cm,  right=2cm
+}
+
+% ── colours ─────────────────────────────────────────────────────────────────
+\definecolor{navy}{HTML}{0C447C}
+\definecolor{headbg}{HTML}{185FA5}
+\definecolor{rowalt}{HTML}{F8F8F6}
+\definecolor{border}{HTML}{D3D1C7}
+\definecolor{graydk}{HTML}{5F5E5A}
+\definecolor{amberdk}{HTML}{633806}
+\definecolor{purpledk}{HTML}{3C3489}
+\definecolor{greendk}{HTML}{27500A}
+\definecolor{sqlbg}{HTML}{F4F4F4}
+\definecolor{sqlkw}{HTML}{0C447C}
+\definecolor{sqlstr}{HTML}{3B6D11}
+
+% ── hyperref ────────────────────────────────────────────────────────────────
+\hypersetup{
+  colorlinks=true,
+  linkcolor=navy,
+  urlcolor=navy,
+  pdftitle={Modelagem SBD OLTP - Locadora de Veiculos},
+  pdfauthor={Izabela Lima da Silva | Caio Meirelles}
+}
+
+% ── section formatting ───────────────────────────────────────────────────────
+\titleformat{\section}
+  {\large\bfseries\color{navy}}
+  {\thesection.}{0.5em}{}[\vspace{-0.3em}\textcolor{border}{\rule{\linewidth}{0.4pt}}]
+
+\titleformat{\subsection}
+  {\normalsize\bfseries\color{navy}}
+  {\thesubsection.}{0.5em}{}
+
+% ── header / footer ─────────────────────────────────────────────────────────
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\setlength{\headheight}{15pt}
+\fancyhead[L]{\small\color{graydk} MAE016 TED-B \textbar\ Modelagem SBD OLTP}
+\fancyhead[R]{\small\color{graydk} UFRJ 2026.1}
+\fancyfoot[C]{\small\color{graydk}\thepage}
+
+% ── table helpers ────────────────────────────────────────────────────────────
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+
+\newcommand{\badgePK}{\textcolor{headbg}{\textbf{PK}}}
+\newcommand{\badgeFK}{\textcolor{amberdk}{\textbf{FK}}}
+\newcommand{\badgeUQ}{\textcolor{purpledk}{\textbf{UQ}}}
+\newcommand{\badgeNN}{\textcolor{greendk}{\textbf{NN}}}
+
+% ── SQL listing style ────────────────────────────────────────────────────────
+\lstdefinestyle{sql}{
+  language=SQL,
+  backgroundcolor=\color{sqlbg},
+  basicstyle=\ttfamily\small,
+  keywordstyle=\bfseries\color{sqlkw},
+  stringstyle=\color{sqlstr},
+  commentstyle=\color{graydk},
+  frame=single,
+  framerule=0.4pt,
+  rulecolor=\color{border},
+  breaklines=true,
+  showstringspaces=false,
+  tabsize=4,
+  xleftmargin=0.5cm,
+  xrightmargin=0.5cm,
+  aboveskip=0.5em,
+  belowskip=0.5em,
+  morekeywords={VARCHAR,DATE,DECIMAL,REFERENCES,INT}
+}
+
+% ── document ─────────────────────────────────────────────────────────────────
+\begin{document}
+
+% ════════════════════════════════════════════════════════════════════════════
+%  CAPA
+% ════════════════════════════════════════════════════════════════════════════
+\begin{titlepage}
+  \thispagestyle{empty}
+  \begin{center}
+
+    {\color{navy}\rule{\linewidth}{2pt}}
+    \vspace{0.4cm}
+
+    {\Large\bfseries\color{navy}
+      Universidade Federal do Rio de Janeiro\\[0.2em]
+      N\'ucleo de Computa\c{c}\~ao Eletr\^onica --- NCE}
+
+    \vspace{0.6cm}
+    {\color{navy}\rule{\linewidth}{0.5pt}}
+    \vspace{1.5cm}
+
+    {\LARGE\bfseries Modelagem de Data Warehouse}\\[0.6em]
+    {\Large\color{graydk} PARTE I --- Modelagem SBD OLTP}
+
+    \vspace{1cm}
+    {\Huge\bfseries\color{navy} Relat\'orio}
+
+    \vspace{2cm}
+
+    \begin{tabular}{rl}
+      \textbf{Disciplina:} & MAE016 TED-B \textbar\ Big Data \& Data Warehouse \\[0.5em]
+      \textbf{Professor:}  & Milton Ramos Ramirez \\[1.5em]
+      \textbf{Integrante / DRE:} & Izabela Lima da Silva \quad 124156557 \\[0.3em]
+                                 & Caio Meirelles \quad\quad\quad\; 122071557 \\
+    \end{tabular}
+
+    \vfill
+
+    {\large 19 de abril de 2026}\\[0.4em]
+    {\large UFRJ 2026.1}
+
+    \vspace{0.6cm}
+    {\color{navy}\rule{\linewidth}{2pt}}
+  \end{center}
+\end{titlepage}
+
+% ════════════════════════════════════════════════════════════════════════════
+%  SUMÁRIO
+% ════════════════════════════════════════════════════════════════════════════
+\newpage
+\tableofcontents
+\newpage
+
+% ════════════════════════════════════════════════════════════════════════════
+%  1. INTRODUÇÃO
+% ════════════════════════════════════════════════════════════════════════════
+\section{Introdu\c{c}\~ao}
+
+Este trabalho tem como objetivo a modelagem de um sistema de banco de dados transacional (OLTP) para uma empresa fict\'icia de loca\c{c}\~ao de ve\'iculos, com p\'atio localizado no Aeroporto Gale\~ao, abrangendo o controle de clientes, frota, reservas, loca\c{c}\~oes, pagamentos e movimenta\c{c}\~ao entre os p\'atios compartilhados de seis empresas independentes de loca\c{c}\~ao de autom\'oveis.
+
+% ════════════════════════════════════════════════════════════════════════════
+%  2. UNIVERSO DE DISCURSO
+% ════════════════════════════════════════════════════════════════════════════
+\section{Universo de Discurso}
+
+O universo de discurso deste sistema compreende as opera\c{c}\~oes de uma locadora de ve\'iculos, incluindo cadastro de clientes, controle de ve\'iculos, gest\~ao de p\'atios, reservas, loca\c{c}\~oes, pagamentos e movimenta\c{c}\~ao de ve\'iculos entre diferentes unidades.
+
+% ════════════════════════════════════════════════════════════════════════════
+%  3. REQUISITOS & RELATÓRIOS GERENCIAIS
+% ════════════════════════════════════════════════════════════════════════════
+\section{Requisitos \& Relat\'orios Gerenciais}
+
+O sistema deve permitir a gera\c{c}\~ao dos seguintes relat\'orios gerenciais:
+
+\begin{itemize}
+  \item Quantidade de ve\'iculos por p\'atio
+  \item Taxa de ocupa\c{c}\~ao da frota
+  \item Hist\'orico de loca\c{c}\~oes por per\'iodo
+  \item Movimenta\c{c}\~ao de ve\'iculos entre p\'atios
+  \item Disponibilidade de ve\'iculos por categoria
+\end{itemize}
+
+% ════════════════════════════════════════════════════════════════════════════
+%  4. MODELO CONCEITUAL (MER)
+% ════════════════════════════════════════════════════════════════════════════
+\section{Modelo Conceitual (MER)}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth, keepaspectratio]{modelo_conceitual.png}
+  \caption{Modelo Conceitual}
+  \label{fig:conceitual}
+\end{figure}
+
+O modelo conceitual foi desenvolvido utilizando o modelo entidade-relacionamento (MER), representando as principais entidades do sistema e seus relacionamentos, como Cliente, Ve\'iculo, Reserva, Loca\c{c}\~ao, P\'atio, Movimenta\c{c}\~ao e Pagamento.
+
+Optou-se por separar as entidades Reserva e Loca\c{c}\~ao, permitindo diferenciar inten\c{c}\~oes de aluguel de sua efetiva\c{c}\~ao. Al\'em disso, a entidade Movimenta\c{c}\~ao foi inclu\'ida para registrar o hist\'orico de deslocamento da frota entre p\'atios.
+
+Principais entidades do sistema:
+
+\begin{itemize}
+  \item \textbf{Cliente:} armazena dados dos usu\'arios da locadora
+  \item \textbf{Ve\'iculo:} representa os carros dispon\'iveis para loca\c{c}\~ao
+  \item \textbf{P\'atio:} locais onde os ve\'iculos est\~ao armazenados
+  \item \textbf{Reserva:} solicita\c{c}\~oes pr\'evias de loca\c{c}\~ao
+  \item \textbf{Loca\c{c}\~ao:} efetiva\c{c}\~ao do aluguel de um ve\'iculo
+  \item \textbf{Pagamento:} registros financeiros das loca\c{c}\~oes
+  \item \textbf{Movimenta\c{c}\~ao:} controle de deslocamento de ve\'iculos entre p\'atios
+\end{itemize}
+
+% ════════════════════════════════════════════════════════════════════════════
+%  5. MODELO LÓGICO
+% ════════════════════════════════════════════════════════════════════════════
+\section{Modelo L\'ogico}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth, keepaspectratio]{modelo_logico.png}
+  \caption{Modelo L\'ogico}
+  \label{fig:logico}
+\end{figure}
+
+O modelo l\'ogico foi obtido a partir da transforma\c{c}\~ao do modelo conceitual em tabelas relacionais, com defini\c{c}\~ao de chaves prim\'arias e estrangeiras para garantir a integridade referencial.
+
+% ════════════════════════════════════════════════════════════════════════════
+%  6. MODELO FÍSICO
+% ════════════════════════════════════════════════════════════════════════════
+\section{Modelo F\'isico}
+
+O modelo f\'isico foi implementado em SQL seguindo o padr\~ao ANSI SQL (SQL99), com defini\c{c}\~ao das estruturas das tabelas e restri\c{c}\~oes de integridade.
+
+\begin{lstlisting}[style=sql, caption={C\'odigo SQL --- Modelo F\'isico}]
+CREATE TABLE cliente (
+    id_cliente INT PRIMARY KEY,
+    nome VARCHAR(100),
+    data_nascimento DATE,
+    cpf_cnpj VARCHAR(20),
+    cnh VARCHAR(20),
+    validade_cnh DATE
+);
+
+CREATE TABLE patio (
+    id_patio INT PRIMARY KEY,
+    endereco VARCHAR(100),
+    n_vagas INT
+);
+
+CREATE TABLE veiculo (
+    id_veiculo INT PRIMARY KEY,
+    id_patio INT,
+    id_vaga VARCHAR(50),
+    modelo VARCHAR(50),
+    placa VARCHAR(20),
+    FOREIGN KEY (id_patio) REFERENCES patio(id_patio)
+);
+
+CREATE TABLE movimentacao (
+    id_movimentacao INT PRIMARY KEY,
+    id_veiculo INT,
+    id_patio_origem INT,
+    id_patio_destino INT,
+    data_movimentacao DATE,
+    FOREIGN KEY (id_veiculo) REFERENCES veiculo(id_veiculo),
+    FOREIGN KEY (id_patio_origem) REFERENCES patio(id_patio),
+    FOREIGN KEY (id_patio_destino) REFERENCES patio(id_patio)
+);
+
+CREATE TABLE reserva (
+    id_reserva INT PRIMARY KEY,
+    id_cliente INT,
+    id_patio_retirada INT,
+    categoria_veiculo VARCHAR(50),
+    data_inicio DATE,
+    data_fim DATE,
+    FOREIGN KEY (id_cliente) REFERENCES cliente(id_cliente),
+    FOREIGN KEY (id_patio_retirada) REFERENCES patio(id_patio)
+);
+
+CREATE TABLE locacao (
+    id_locacao INT PRIMARY KEY,
+    id_cliente INT,
+    id_veiculo INT,
+    id_patio_retirada INT,
+    id_patio_devolucao INT,
+    data_retirada DATE,
+    data_devolucao DATE,
+    FOREIGN KEY (id_cliente) REFERENCES cliente(id_cliente),
+    FOREIGN KEY (id_veiculo) REFERENCES veiculo(id_veiculo),
+    FOREIGN KEY (id_patio_retirada) REFERENCES patio(id_patio),
+    FOREIGN KEY (id_patio_devolucao) REFERENCES patio(id_patio)
+);
+
+CREATE TABLE pagamento (
+    id_pagamento INT PRIMARY KEY,
+    id_locacao INT,
+    data_pagamento DATE,
+    valor DECIMAL(10,2),
+    FOREIGN KEY (id_locacao) REFERENCES locacao(id_locacao)
+);
+\end{lstlisting}
+
+Link para reposit\'orio no GitHub:
+\url{https://github.com/idevlimes/locadora-oltp}
+
+% ════════════════════════════════════════════════════════════════════════════
+%  7. CONSIDERAÇÕES FINAIS
+% ════════════════════════════════════════════════════════════════════════════
+\section{Considera\c{c}\~{o}es Finais}
+
+O sistema modelado atende aos requisitos propostos, permitindo o controle das opera\c{c}\~oes de loca\c{c}\~ao de ve\'iculos e fornecendo suporte \`a an\'alise gerencial e futura integra\c{c}\~ao com sistemas anal\'iticos.
+
+\end{document}
