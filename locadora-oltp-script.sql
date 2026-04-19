@@ -1,3 +1,8 @@
+Integrantes: (TED-B MAE016)
+Izabela Lima    DRE 124156557
+Caio Meirelles  DRE 122071557
+_______________________________________________________________________
+
 </> SQL
 
 CREATE TABLE cliente (
